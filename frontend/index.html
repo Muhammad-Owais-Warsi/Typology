@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Typing Battle</title>
+  <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    #match-section, #game-section { display: none; }
+    #words { font-size: 24px; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Typing Battle</h1>
+
+  <div id="match-section">
+    <p>Matching you with an opponent...</p>
+  </div>
+
+  <div id="game-section">
+    <div id="words">Loading...</div>
+    <input id="typing-input" type="text" placeholder="Type here..." autocomplete="off" />
+    <div id="scoreboard">
+      <p>Your Score: <span id="your-score">0</span></p>
+      <p>Opponent Score: <span id="opponent-score">0</span></p>
+    </div>
+  </div>
+
+  <button onclick="startMatchmaking()">Find Match</button>
+
+  <script>
+    const playerId = 'player-' + Math.floor(Math.random() * 10000);
+    let roomId = null;
+    let opponentId = null;
+    let channel = null;
+
+    let yourScore = 0;
+    let opponentScore = 0;
+    let words = ['apple', 'banana', 'grape', 'orange', 'mango'];
+    let currentWordIndex = 0;
+
+    const pusher = new Pusher('ab038fe7b3ab08bcd581', {
+      cluster: 'ap2'
+    });
+
+    function startMatchmaking() {
+      document.querySelector("button").style.display = "none";
+      document.getElementById("match-section").style.display = "block";
+
+      fetch('http://localhost:4000/find-match', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ playerId })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.matched) {
+          roomId = data.roomId;
+          opponentId = data.opponentId;
+          subscribeToRoom(roomId);
+        } else {
+          // Poll or wait for match-start
+          waitForMatch();
+        }
+      });
+    }
+
+    function waitForMatch() {
+      // Temporarily subscribe to a personal room to get notified
+      const tempRoom = `player-${playerId}`;
+      const tempChannel = pusher.subscribe(tempRoom);
+
+      tempChannel.bind("match-start", data => {
+        roomId = data.roomId;
+        opponentId = data.players.find(id => id !== playerId);
+        pusher.unsubscribe(tempRoom);
+        subscribeToRoom(roomId);
+      });
+    }
+
+    function subscribeToRoom(roomId) {
+      document.getElementById("match-section").style.display = "none";
+      document.getElementById("game-section").style.display = "block";
+
+      channel = pusher.subscribe(roomId);
+
+      channel.bind("match-start", data => {
+        console.log("Match started in room", roomId);
+        document.getElementById("words").textContent = words[currentWordIndex];
+      });
+
+      channel.bind("score-update", data => {
+        if (data.playerId !== playerId) {
+          opponentScore = data.score;
+          document.getElementById("opponent-score").textContent = opponentScore;
+        }
+      });
+
+      document.getElementById("typing-input").addEventListener("input", (e) => {
+        const input = e.target.value.trim();
+        const currentWord = words[currentWordIndex];
+        if (input === currentWord) {
+          yourScore++;
+          e.target.value = '';
+          currentWordIndex = (currentWordIndex + 1) % words.length;
+          document.getElementById("words").textContent = words[currentWordIndex];
+          document.getElementById("your-score").textContent = yourScore;
+
+          fetch('http://localhost:4000/update-score', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ roomId, playerId, score: yourScore })
+          });
+        }
+      });
+    }
+
+    // Optional: End game after 60s
+    function endGame() {
+      if (channel && roomId) {
+        pusher.unsubscribe(roomId);
+      }
+      alert("Game Over! Final Score: " + yourScore);
+    }
+
+    setTimeout(endGame, 60000);
+  </script>
+</body>
+</html>
