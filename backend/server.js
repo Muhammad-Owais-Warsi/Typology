@@ -24,7 +24,7 @@ const startTimer = (roomId, duration = 60) => {
   const interval = setInterval(() => {
     timeLeft--;
 
-    pusher.trigger(`room-${roomId}`, "timer-update", {
+    pusher.trigger(`${roomId}`, "timer-update", {
       timeLeft,
     });
 
@@ -56,10 +56,12 @@ app.post("/find-match", (req, res) => {
       players,
     });
 
-    startTimer(roomId, 65);
     const opponentId = waitingPlayer.id;
     waitingPlayer = null;
 
+    startTimer(roomId, 65);
+    console.log("Triggering match-start on room:", roomId);
+    
     res.json({ matched: true, roomId, opponentId });
   } else {
     waitingPlayer = { id: playerId };

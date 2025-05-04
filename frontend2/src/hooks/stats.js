@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from "react";
+import { useCodeStore } from "../utils/zustand";
 
-const PARA =
+let PARA =
   "The golden hues of the setting sun painted the sky in a breathtaking masterpiece, casting long shadows across the quiet meadow. A gentle breeze whispered through the tall grass, carrying with it the faint scent of wildflowers. Somewhere in the distance, the soft chirping of crickets began to fill the air, signaling the arrival of twilight. In that serene moment, time seemed to pause, and the world felt beautifully still.";
 
 
@@ -61,6 +62,8 @@ const PARA =
 
 
 export default function usePlay() {
+  const { code } = useCodeStore();
+  PARA = code
   
   const [stats, setStats] = useState({
     correct: 0,
@@ -68,6 +71,9 @@ export default function usePlay() {
     value: "",
     index: [{value: 0, typed: false}]
   });
+  
+  
+  
   const prevIndex = useRef(0);
   const handleInputChange = useCallback((e) => {
     const typedValue = e.target.value;

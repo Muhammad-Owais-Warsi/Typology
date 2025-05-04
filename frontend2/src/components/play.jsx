@@ -1,6 +1,6 @@
 
 import usePlay from "../hooks/stats";
-
+import { useStore } from "../utils/zustand";
 
 
 export default function Play() {
@@ -28,11 +28,14 @@ export default function Play() {
       );
     });
   };
+  
+  const {timer} = useStore()
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-gray-100 p-6">
       <div className="w-full max-w-3xl">
         <div className="flex justify-between items-center mb-8">
+          <h1 className="text-2xl font-bold text-yellow-500">{timer}</h1>
           <h1 className="text-2xl font-bold text-yellow-500">MonkeyType</h1>
           <div className="flex gap-6">
             <div className="text-center">

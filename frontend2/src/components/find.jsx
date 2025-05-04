@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { pusher } from "../utils/pusher";
 import { api } from "../utils/axios";
 import Play from "./play";
+import { useCodeStore, useStore } from "../utils/zustand";
+import generateRandomSnippet from "../utils/code";
 
 export default function FindMatch() {
   const [playerId, setPlayerId] = useState(null);
@@ -9,7 +11,11 @@ export default function FindMatch() {
   const [opponentId, setOpponentId] = useState(null);
   const [showCountdown, setShowCountdown] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
-
+  
+  const [countdown, setCountdown] = useState(5);
+  
+  const { setTimer } = useStore();
+  const { setCode } = useCodeStore();
   const channelRef = useRef(null);
 
   async function findMatch() {
@@ -47,6 +53,7 @@ export default function FindMatch() {
 
       setRoomId(newRoomId);
       setOpponentId(newOpponentId);
+      
 
       pusher.unsubscribe(tempRoom);
       subscribeToRoom(newRoomId, tempPlayerId, newOpponentId);
@@ -61,19 +68,39 @@ export default function FindMatch() {
       console.log("Match started in room", room);
       console.log("You:", player, "Opponent:", opponent);
     });
+    
+    channel.bind("timer-update", (data) => {
+      console.log(`Sending timer update to room-${roomId}: ${data.timeLeft}s`);
+      setTimer(data.timeLeft)
+      
+
+    })
+    
+    console.log("Subscribing to room:", room);
+
   }
 
   useEffect(() => {
     if (playerId && opponentId && roomId) {
       setShowCountdown(true);
-
-      const timeout = setTimeout(() => {
-        setGameStarted(true);
-      }, 5000);
-
-      return () => clearTimeout(timeout);
+      const code = generateRandomSnippet();
+      setCode(code.code)
+  
+      const interval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev === 1) {
+            clearInterval(interval);
+            setShowCountdown(false);
+            setGameStarted(true); // transition to game
+          }
+          return prev - 1;
+        });
+      }, 1000);
+  
+      return () => clearInterval(interval);
     }
   }, [playerId, opponentId, roomId]);
+
 
   if (gameStarted) {
     return <Play playerId={playerId} opponentId={opponentId} roomId={roomId} />;
@@ -98,9 +125,11 @@ export default function FindMatch() {
 
       {showCountdown && (
         <div className="text-green-400 text-2xl font-bold animate-pulse text-center">
-          Your game will start in 5 seconds...
+          Your game will start in {countdown} seconds...
         </div>
       )}
+      
+
       
 
       {roomId && (
