@@ -6,7 +6,7 @@ dotenv.config();
 
 const app = express();
 app.use(cors({
-  origin: "https://chimptype.onrender.com/"
+  origin: "https://chimptype.onrender.com"
 }));
 app.use(express.json());
 
