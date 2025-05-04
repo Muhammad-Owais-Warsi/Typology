@@ -18,7 +18,7 @@ const pusher = new Pusher({
 
 let waitingPlayer = null;
 
-function getRandomCodeBlock(roomId) {
+function getRandomCodeBlock() {
   const codeBlocks = [
     {
       language: "Python",
@@ -104,10 +104,11 @@ puts "Done looping!"
     },
   ];
 
-  const randomBlock = codeBlocks[Math.floor(Math.random() * codeBlocks.length)];
-  pusher.trigger(`${roomId}`, "code-block", {
-    randomBlock
-  })
+  return codeBlocks[Math.floor(Math.random() * codeBlocks.length)];
+  // pusher.trigger(`${roomId}`, "code-block", {
+  //   randomBlock
+  // })
+
 }
 
 const startTimer = (roomId, duration = 60) => {
@@ -139,22 +140,27 @@ app.post("/find-match", (req, res) => {
     const players = [waitingPlayer.id, playerId];
 
 
+
     pusher.trigger(`room-${roomId}`, "match-start", {
       roomId,
       players,
-      codeBlock,
+  
     });
 
+    const randomBlock = getRandomCodeBlock();
     pusher.trigger(`player-${waitingPlayer.id}`, "match-start", {
       roomId,
       players,
-      codeBlock,
+      randomBlock
     });
+    
+    pusher.trigger(`${roomId}`, "code-block", {
+      randomBlock
+    })
 
     const opponentId = waitingPlayer.id;
     waitingPlayer = null;
 
-    getRandomCodeBlock(roomId);
     startTimer(roomId, 65);
     console.log("Triggering match-start on room:", roomId);
 
