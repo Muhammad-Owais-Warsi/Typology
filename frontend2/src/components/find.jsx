@@ -1,11 +1,14 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { pusher } from "../utils/pusher";
 import { api } from "../utils/axios";
+import Play from "./play";
 
 export default function FindMatch() {
   const [playerId, setPlayerId] = useState(null);
   const [roomId, setRoomId] = useState(null);
   const [opponentId, setOpponentId] = useState(null);
+  const [showCountdown, setShowCountdown] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false);
 
   const channelRef = useRef(null);
 
@@ -58,8 +61,22 @@ export default function FindMatch() {
       console.log("Match started in room", room);
       console.log("You:", player, "Opponent:", opponent);
     });
+  }
 
-    // Add more bindings here (score updates, typing events, etc.)
+  useEffect(() => {
+    if (playerId && opponentId && roomId) {
+      setShowCountdown(true);
+
+      const timeout = setTimeout(() => {
+        setGameStarted(true);
+      }, 5000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [playerId, opponentId, roomId]);
+
+  if (gameStarted) {
+    return <Play playerId={playerId} opponentId={opponentId} roomId={roomId} />;
   }
 
   return (
@@ -71,14 +88,21 @@ export default function FindMatch() {
       >
         Find Match
       </button>
-    
+
       {playerId && !opponentId && (
         <div className="text-yellow-300 text-xl animate-pulse">
           <h1>WAITING...</h1>
           <p className="text-sm mt-2">Your ID: {playerId}</p>
         </div>
       )}
-    
+
+      {showCountdown && (
+        <div className="text-green-400 text-2xl font-bold animate-pulse text-center">
+          Your game will start in 5 seconds...
+        </div>
+      )}
+      
+
       {roomId && (
         <div className="bg-[#1a1a1a] border border-yellow-500 rounded-lg p-4 mt-4 shadow-lg w-full max-w-sm text-sm space-y-2">
           <p><span className="text-yellow-400">Room ID:</span> {roomId}</p>
@@ -87,6 +111,5 @@ export default function FindMatch() {
         </div>
       )}
     </div>
-
   );
 }
