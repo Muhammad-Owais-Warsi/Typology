@@ -142,13 +142,11 @@ app.post("/find-match", (req, res) => {
     pusher.trigger(`room-${roomId}`, "match-start", {
       roomId,
       players,
-      codeBlock,
     });
 
     pusher.trigger(`player-${waitingPlayer.id}`, "match-start", {
       roomId,
       players,
-      codeBlock,
     });
 
     const opponentId = waitingPlayer.id;
