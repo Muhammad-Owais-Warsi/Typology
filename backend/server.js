@@ -111,7 +111,7 @@ puts "Done looping!"
 
 }
 
-const startTimer = (roomId, duration = 60) => {
+const startTimer = (roomId, duration = 10) => {
   let timeLeft = duration;
 
   const interval = setInterval(() => {
@@ -123,7 +123,7 @@ const startTimer = (roomId, duration = 60) => {
 
     if (timeLeft <= 0) {
       clearInterval(interval);
-      pusher.trigger(`room-${roomId}`, "timer-expired", {});
+      pusher.trigger(`${roomId}`, "timer-expired", {});
     }
   }, 1000);
 };
