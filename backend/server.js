@@ -52,6 +52,7 @@ app.post("/find-match", (req, res) => {
       players,
     });
 
+    startTimer(roomId, 60);
     const opponentId = waitingPlayer.id;
     waitingPlayer = null;
 
