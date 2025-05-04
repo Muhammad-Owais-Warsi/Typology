@@ -13,10 +13,27 @@ const pusher = new Pusher({
   key: process.env.KEY,
   secret: process.env.SECRET,
   cluster: process.env.CLUSTER,
-  useTLS: true
+  useTLS: true,
 });
 
 let waitingPlayer = null;
+
+const startTimer = (roomId, duration = 60) => {
+  let timeLeft = duration;
+
+  const interval = setInterval(() => {
+    timeLeft--;
+
+    pusher.trigger(`room-${roomId}`, "timer-update", {
+      timeLeft,
+    });
+
+    if (timeLeft <= 0) {
+      clearInterval(interval);
+      pusher.trigger(`room-${roomId}`, "timer-expired", {});
+    }
+  }, 1000);
+};
 
 app.post("/find-match", (req, res) => {
   const { playerId } = req.body;
@@ -25,14 +42,14 @@ app.post("/find-match", (req, res) => {
     const roomId = `room-${Date.now()}`;
     const players = [waitingPlayer.id, playerId];
 
-    pusher.trigger(`room-${roomId}`, "match-start", {
+    pusher.trigger(`${roomId}`, "match-start", {
       roomId,
-      players
+      players,
     });
 
     pusher.trigger(`player-${waitingPlayer.id}`, "match-start", {
       roomId,
-      players
+      players,
     });
 
     const opponentId = waitingPlayer.id;
