@@ -104,8 +104,11 @@ puts "Done looping!"
     },
   ];
 
-  const randomBlock = codeBlocks[Math.floor(Math.random() * codeBlocks.length)];
-  return randomBlock;
+  return codeBlocks[Math.floor(Math.random() * codeBlocks.length)];
+  // pusher.trigger(`${roomId}`, "code-block", {
+  //   randomBlock
+  // })
+
 }
 
 const startTimer = (roomId, duration = 60) => {
@@ -136,20 +139,24 @@ app.post("/find-match", (req, res) => {
     const roomId = `room-${Date.now()}`;
     const players = [waitingPlayer.id, playerId];
 
-    const codeBlock = getRandomCodeBlock();
 
 
     pusher.trigger(`room-${roomId}`, "match-start", {
       roomId,
       players,
-      codeBlock,
+  
     });
 
+    const randomBlock = getRandomCodeBlock();
     pusher.trigger(`player-${waitingPlayer.id}`, "match-start", {
       roomId,
       players,
-      codeBlock,
+      randomBlock
     });
+    
+    pusher.trigger(`${roomId}`, "code-block", {
+      randomBlock
+    })
 
     const opponentId = waitingPlayer.id;
     waitingPlayer = null;

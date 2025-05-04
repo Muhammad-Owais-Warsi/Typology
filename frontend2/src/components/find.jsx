@@ -3,7 +3,7 @@ import { pusher } from "../utils/pusher";
 import { api } from "../utils/axios";
 import Play from "./play";
 import { useCodeStore, useStore } from "../utils/zustand";
-import generateRandomSnippet from "../utils/code";
+
 
 export default function FindMatch() {
   const [playerId, setPlayerId] = useState(null);
@@ -16,6 +16,7 @@ export default function FindMatch() {
   
   const { setTimer } = useStore();
   const { setCode } = useCodeStore();
+
   const channelRef = useRef(null);
 
   async function findMatch() {
@@ -54,27 +55,41 @@ export default function FindMatch() {
       setRoomId(newRoomId);
       setOpponentId(newOpponentId);
       
+      setCode(data.randomBlock.code)
 
       pusher.unsubscribe(tempRoom);
       subscribeToRoom(newRoomId, tempPlayerId, newOpponentId);
     });
   }
+  
 
   function subscribeToRoom(room, player, opponent) {
+    console.log(room)
     const channel = pusher.subscribe(room);
     channelRef.current = channel;
+    
 
-    channel.bind("match-start", () => {
-      console.log("Match started in room", room);
+    channel.bind("match-start", (data) => {
+      console.log("Match started in room", data.room);
       console.log("You:", player, "Opponent:", opponent);
+      
+      console.log(data);
     });
     
+    
+    
     channel.bind("timer-update", (data) => {
-      console.log(`Sending timer update to room-${roomId}: ${data.timeLeft}s`);
+      console.log(`Sending timer update to ${room}: ${data.timeLeft}s`);
       setTimer(data.timeLeft)
-      
-
     })
+    
+    
+    channel.bind("code-block", (data) => {
+      console.log(data.randomBlock.code)
+      setCode(data?.randomBlock.code)
+      
+    })
+    
     
     console.log("Subscribing to room:", room);
 
@@ -83,8 +98,7 @@ export default function FindMatch() {
   useEffect(() => {
     if (playerId && opponentId && roomId) {
       setShowCountdown(true);
-      const code = generateRandomSnippet();
-      setCode(code.code)
+
   
       const interval = setInterval(() => {
         setCountdown((prev) => {
