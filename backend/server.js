@@ -136,7 +136,8 @@ app.post("/find-match", (req, res) => {
     const roomId = `room-${Date.now()}`;
     const players = [waitingPlayer.id, playerId];
 
-    const codeBlock = generateCodeBlock();
+    const codeBlock = getRandomCodeBlock();
+
 
     pusher.trigger(`room-${roomId}`, "match-start", {
       roomId,
