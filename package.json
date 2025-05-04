@@ -4,7 +4,7 @@
   "main": "server.js",
   "scripts": {
     "install-server": "cd backend && npm install",
-    "start-server": "cd backend && node index.js",
+    "start-server": "cd backend && node server.js",
     "install-client": "cd frontend2 && npm install",
     "build-client": "cd frontend2 && npm run build",
     "start-client": "cd frontend2 && npm run start"
