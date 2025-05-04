@@ -144,22 +144,15 @@ app.post("/find-match", (req, res) => {
     pusher.trigger(`room-${roomId}`, "match-start", {
       roomId,
       players,
-<<<<<<< HEAD
-=======
-  
->>>>>>> 9fd528adf925712274f37dcd43ab6771d57ce6c7
     });
 
     const randomBlock = getRandomCodeBlock();
     pusher.trigger(`player-${waitingPlayer.id}`, "match-start", {
       roomId,
       players,
-<<<<<<< HEAD
-=======
       randomBlock
->>>>>>> 9fd528adf925712274f37dcd43ab6771d57ce6c7
     });
-    
+
     pusher.trigger(`${roomId}`, "code-block", {
       randomBlock
     })
