@@ -7,31 +7,31 @@ import { useNavigate } from "react-router-dom";
 
 export default function Play({roomId}) {
 
-  
+
   const { stats, handleInputChange, PARA } = usePlay();
   console.log(roomId)
   const channel = pusher.subscribe(roomId)
 
 
-  
+
   channel.bind("timer-expired", () => {
     window.location.reload()
   })
-  
+
   const getStyledText = () => {
     return PARA.split("").map((char, index) => {
- 
+
       const currentIndex = stats.value.length;
-      
-   
+
+
       if (index >= currentIndex) {
         return <span key={index} className="text-gray-500">{char}</span>;
       }
-      
+
 
       const typedChar = stats.value[index];
       const isCorrect = typedChar === char;
-      
+
       return (
         <span key={index} className={isCorrect ? "text-yellow-500" : "text-red-500"}>
           {char}
@@ -39,9 +39,9 @@ export default function Play({roomId}) {
       );
     });
   };
-  
+
   const { timer } = useStore();
-  
+
 
 
   return (
@@ -49,7 +49,7 @@ export default function Play({roomId}) {
       <div className="w-full max-w-3xl">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-bold text-yellow-500">{timer}</h1>
-          <h1 className="text-2xl font-bold text-yellow-500">MonkeyType</h1>
+          <h1 className="text-2xl font-bold text-yellow-500">ChimpType</h1>
           <div className="flex gap-6">
             <div className="text-center">
               <p className="text-sm text-gray-400">Correct</p>
@@ -81,4 +81,3 @@ export default function Play({roomId}) {
     </div>
   );
 }
-

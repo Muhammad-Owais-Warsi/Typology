@@ -11,9 +11,9 @@ export default function FindMatch() {
   const [opponentId, setOpponentId] = useState(null);
   const [showCountdown, setShowCountdown] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
-  
+
   const [countdown, setCountdown] = useState(5);
-  
+
   const { setTimer } = useStore();
   const { setCode } = useCodeStore();
 
@@ -54,43 +54,43 @@ export default function FindMatch() {
 
       setRoomId(newRoomId);
       setOpponentId(newOpponentId);
-      
+
       setCode(data.randomBlock.code)
 
       pusher.unsubscribe(tempRoom);
       subscribeToRoom(newRoomId, tempPlayerId, newOpponentId);
     });
   }
-  
+
 
   function subscribeToRoom(room, player, opponent) {
     console.log(room)
     const channel = pusher.subscribe(room);
     channelRef.current = channel;
-    
+
 
     channel.bind("match-start", (data) => {
       console.log("Match started in room", data.room);
       console.log("You:", player, "Opponent:", opponent);
-      
+
       console.log(data);
     });
-    
-    
-    
+
+
+
     channel.bind("timer-update", (data) => {
       console.log(`Sending timer update to ${room}: ${data.timeLeft}s`);
       setTimer(data.timeLeft)
     })
-    
-    
+
+
     channel.bind("code-block", (data) => {
       console.log(data.randomBlock.code)
       setCode(data?.randomBlock.code)
-      
+
     })
-    
-    
+
+
     console.log("Subscribing to room:", room);
 
   }
@@ -99,7 +99,7 @@ export default function FindMatch() {
     if (playerId && opponentId && roomId) {
       setShowCountdown(true);
 
-  
+
       const interval = setInterval(() => {
         setCountdown((prev) => {
           if (prev === 1) {
@@ -110,7 +110,7 @@ export default function FindMatch() {
           return prev - 1;
         });
       }, 1000);
-  
+
       return () => clearInterval(interval);
     }
   }, [playerId, opponentId, roomId]);
@@ -122,6 +122,8 @@ export default function FindMatch() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#0f0f0f] text-[#f5f5f5] font-mono gap-6 px-4">
+      <h1 className="text-3xl">Welcome to <span className="bg-yellow-300 text-black  whitespace-nowrap pr-1">ChimpType</span>.</h1>
+
       <button
         disabled={playerId}
         onClick={findMatch}
@@ -142,9 +144,9 @@ export default function FindMatch() {
           Your game will start in {countdown} seconds...
         </div>
       )}
-      
 
-      
+
+
 
       {roomId && (
         <div className="bg-[#1a1a1a] border border-yellow-500 rounded-lg p-4 mt-4 shadow-lg w-full max-w-sm text-sm space-y-2">
