@@ -38,11 +38,15 @@ const startTimer = (roomId, duration = 60) => {
 app.post("/find-match", (req, res) => {
   const { playerId } = req.body;
 
+  if (!playerId) {
+    return res.status(400).json({ error: "Missing playerId" });
+  }
+
   if (waitingPlayer && waitingPlayer.id !== playerId) {
     const roomId = `room-${Date.now()}`;
     const players = [waitingPlayer.id, playerId];
 
-    pusher.trigger(`${roomId}`, "match-start", {
+    pusher.trigger(`room-${roomId}`, "match-start", {
       roomId,
       players,
     });
@@ -52,7 +56,7 @@ app.post("/find-match", (req, res) => {
       players,
     });
 
-    startTimer(roomId, 60);
+    startTimer(roomId, 65);
     const opponentId = waitingPlayer.id;
     waitingPlayer = null;
 
@@ -65,6 +69,9 @@ app.post("/find-match", (req, res) => {
 
 app.post("/update-score", (req, res) => {
   const { roomId, playerId, score } = req.body;
+  if (!playerId) {
+    return res.status(400).json({ error: "Missing playerId" });
+  }
   pusher.trigger(`room-${roomId}`, "score-update", { playerId, score });
   res.send({ success: true });
 });
