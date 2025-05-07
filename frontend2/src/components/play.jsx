@@ -1,4 +1,3 @@
-
 import usePlay from "../hooks/stats";
 import { pusher } from "../utils/pusher";
 import { useStore } from "../utils/zustand";
@@ -9,10 +8,7 @@ export default function Play({roomId}) {
 
 
   const { stats, handleInputChange, PARA } = usePlay();
-  console.log(roomId)
-  const channel = pusher.subscribe(roomId)
-
-
+  const channel = pusher.subscribe(roomId);
 
   channel.bind("timer-expired", () => {
     window.location.reload()
@@ -25,15 +21,14 @@ export default function Play({roomId}) {
 
 
       if (index >= currentIndex) {
-        return <span key={index} className="text-gray-500">{char}</span>;
+        return <span key={index} className="text-gray-500 whitespace-pre">{char}</span>;
       }
-
 
       const typedChar = stats.value[index];
       const isCorrect = typedChar === char;
 
       return (
-        <span key={index} className={isCorrect ? "text-yellow-500" : "text-red-500"}>
+        <span key={index} className={`${isCorrect ? "text-yellow-500" : "text-red-500"} whitespace-pre`}>
           {char}
         </span>
       );
@@ -63,14 +58,18 @@ export default function Play({roomId}) {
         </div>
 
         <div className="relative bg-gray-800 rounded-lg p-8 shadow-lg">
-          <div className="font-mono text-lg">
+          <div className="font-mono text-lg whitespace-pre-wrap">
             {getStyledText()}
           </div>
           <textarea
             value={stats.value}
             onChange={handleInputChange}
-            className="absolute top-0 left-0 w-full h-full p-8 bg-transparent text-transparent caret-yellow-500 resize-none focus:outline-none font-mono text-lg z-10"
+            className="absolute top-0 left-0 w-full h-full p-8 bg-transparent text-transparent caret-yellow-500 resize-none focus:outline-none font-mono text-lg z-10 whitespace-pre"
             autoFocus
+            spellCheck="false"
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
           />
         </div>
 
