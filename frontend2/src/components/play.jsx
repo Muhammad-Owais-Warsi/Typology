@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import usePlay from "../hooks/stats";
 import { pusher } from "../utils/pusher";
 import { useStore } from "../utils/zustand";
@@ -7,16 +8,19 @@ export default function Play({roomId}) {
 
   const { stats, handleInputChange, PARA } = usePlay();
   const channel = pusher.subscribe(roomId);
+  
+  const navigate = useNavigate();
 
   channel.bind("timer-expired", () => {
-    window.location.reload()
+    // window.location.reload()
+    
+    navigate(`/result?correct=${stats.correct}&error=${stats.error}`)
   })
 
   const getStyledText = () => {
     return PARA.split("").map((char, index) => {
 
       const currentIndex = stats.value.length;
-
 
       if (index >= currentIndex) {
         return <span key={index} className="text-gray-500 whitespace-pre">{char}</span>;

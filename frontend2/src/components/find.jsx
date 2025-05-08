@@ -3,6 +3,7 @@ import { pusher } from "../utils/pusher";
 import { api } from "../utils/axios";
 import Play from "./play";
 import { useCodeStore, useStore } from "../utils/zustand";
+import { getUniqueId } from "../utils/uniqueId";
 
 
 export default function FindMatch() {
@@ -20,7 +21,7 @@ export default function FindMatch() {
   const channelRef = useRef(null);
 
   async function findMatch() {
-    const newPlayerId = 'player-' + Math.floor(Math.random() * 10000);
+    const newPlayerId = 'player-' + getUniqueId();
     setPlayerId(newPlayerId);
 
     try {
