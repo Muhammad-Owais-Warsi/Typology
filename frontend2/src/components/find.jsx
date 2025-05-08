@@ -106,7 +106,7 @@ export default function FindMatch() {
           if (prev === 1) {
             clearInterval(interval);
             setShowCountdown(false);
-            setGameStarted(true); // transition to game
+            setGameStarted(true); 
           }
           return prev - 1;
         });
