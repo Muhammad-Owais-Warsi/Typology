@@ -64,6 +64,7 @@ export default function Play({roomId}) {
           <textarea
             value={stats.value}
             onChange={handleInputChange}
+            onKeyDown={handleInputChange}
             className="absolute top-0 left-0 w-full h-full p-8 bg-transparent text-transparent caret-yellow-500 resize-none focus:outline-none font-mono text-lg z-10 whitespace-pre"
             autoFocus
             spellCheck="false"

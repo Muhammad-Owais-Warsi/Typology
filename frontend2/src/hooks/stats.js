@@ -40,16 +40,17 @@ export default function usePlay() {
       const isTyped = newIndexArray[typedIndex - 1]?.typed || false
       
       // Handle tab key
-      if (lastChar === '\t') {
+      if (e.key === 'Tab') {
         e.preventDefault();
-        const newValue = typedValue.slice(0, -1) + '    ';
+        const start = e.target.selectionStart;
+        const newValue = typedValue.slice(0, start) + '    ' + typedValue.slice(start);
         return {
           ...prev,
           value: newValue,
           index: newIndexArray
         };
       }
-      
+    
       if (lastChar === expectedChar) {
         !isTyped ? newCorrect++ : newCorrect;
         newIndexArray[typedIndex - 1] = { typed: true };

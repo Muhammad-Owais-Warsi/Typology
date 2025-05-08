@@ -80,7 +80,6 @@ export default function FindMatch() {
 
 
     channel.bind("timer-update", (data) => {
-      console.log(`Sending timer update to ${room}: ${data.timeLeft}s`);
       setTimer(data.timeLeft)
     })
 
