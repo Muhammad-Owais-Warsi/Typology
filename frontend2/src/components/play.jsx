@@ -47,6 +47,10 @@ export default function Play({roomId}) {
           <h1 className="text-2xl font-bold text-yellow-500">ChimpType</h1>
           <div className="flex gap-6">
             <div className="text-center">
+              <p className="text-sm text-gray-400">WPM</p>
+              <p className="text-xl font-bold text-yellow-500">{stats.wpm}</p>
+            </div>
+            <div className="text-center">
               <p className="text-sm text-gray-400">Correct</p>
               <p className="text-xl font-bold text-yellow-500">{stats.correct}</p>
             </div>

@@ -6,7 +6,6 @@ export function getUniqueId() {
 }
 
 // for future use
-
 function uniqueId() {
   const uid = new ShortUniqueId({ length: 10 });
   
