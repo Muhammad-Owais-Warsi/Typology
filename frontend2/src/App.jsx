@@ -11,7 +11,6 @@ function App() {
      <BrowserRouter>
        <Routes>
          <Route path="/"  element={<FindMatch/>} />
-          {/* <Route path="/game" element={<Play/>} /> */}
        </Routes>
      </BrowserRouter>
     </>

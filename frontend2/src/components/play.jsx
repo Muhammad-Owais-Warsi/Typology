@@ -1,8 +1,6 @@
 import usePlay from "../hooks/stats";
 import { pusher } from "../utils/pusher";
 import { useStore } from "../utils/zustand";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 export default function Play({roomId}) {
 
@@ -36,8 +34,6 @@ export default function Play({roomId}) {
   };
 
   const { timer } = useStore();
-
-
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-gray-100 p-6">
