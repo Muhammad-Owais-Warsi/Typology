@@ -4,82 +4,103 @@ import { pusher } from "../utils/pusher";
 import { useStore } from "../utils/zustand";
 
 export default function Play({roomId}) {
-
-
   const { stats, handleInputChange, PARA } = usePlay();
   const channel = pusher.subscribe(roomId);
-  
   const navigate = useNavigate();
+  const { timer } = useStore();
 
   channel.bind("timer-expired", () => {
-    // window.location.reload()
-    
-    navigate(`/result?correct=${stats.correct}&error=${stats.error}`)
-  })
+    navigate(`/result?correct=${stats.correct}&error=${stats.error}`);
+  });
 
   const getStyledText = () => {
     return PARA.split("").map((char, index) => {
-
       const currentIndex = stats.value.length;
 
       if (index >= currentIndex) {
-        return <span key={index} className="text-gray-500 whitespace-pre">{char}</span>;
+        return (
+          <span 
+            key={index} 
+            className="text-[#666666] whitespace-pre transition-colors duration-150"
+          >
+            {char}
+          </span>
+        );
       }
 
       const typedChar = stats.value[index];
       const isCorrect = typedChar === char;
 
       return (
-        <span key={index} className={`${isCorrect ? "text-yellow-500" : "text-red-500"} whitespace-pre`}>
+        <span key={index} className={`${isCorrect ? "text-yellow-400" : "text-red-400"} whitespace-pre`}>
           {char}
         </span>
       );
     });
   };
 
-  const { timer } = useStore();
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-gray-100 p-6">
-      <div className="w-full max-w-3xl">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold text-yellow-500">{timer}</h1>
-          <h1 className="text-2xl font-bold text-yellow-500">ChimpType</h1>
-          <div className="flex gap-6">
+    <div className="fixed inset-0 bg-[#0f0f0f] text-[#f5f5f5] font-mono">
+      <div className="h-full flex">
+        {/* Left side - Stats and Timer */}
+        <div className="w-1/3 bg-[#1a1a1a] p-8 flex flex-col justify-between border-r border-yellow-400/20">
+          <div className="space-y-8">
             <div className="text-center">
-              <p className="text-sm text-gray-400">WPM</p>
-              <p className="text-xl font-bold text-yellow-500">{stats.wpm}</p>
+              <h1 className="text-4xl font-bold text-yellow-400 mb-2">ChimpType</h1>
+              <p className="text-[#bbbbbb]">Test your typing speed</p>
             </div>
-            <div className="text-center">
-              <p className="text-sm text-gray-400">Correct</p>
-              <p className="text-xl font-bold text-yellow-500">{stats.correct}</p>
+            
+            <div className="space-y-6">
+              <div className="bg-[#2a2a2a] p-6 rounded-xl border border-yellow-400/20">
+                <h2 className="text-2xl font-bold text-yellow-400 mb-4">Timer</h2>
+                <div className="text-4xl font-bold text-center">{timer}</div>
+              </div>
+
+              <div className="bg-[#2a2a2a] p-6 rounded-xl border border-yellow-400/20">
+                <h2 className="text-2xl font-bold text-yellow-400 mb-4">Stats</h2>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#bbbbbb]">WPM</span>
+                    <span className="text-yellow-400 text-xl font-bold">{stats.wpm}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#bbbbbb]">Correct</span>
+                    <span className="text-green-400 text-xl font-bold">{stats.correct}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#bbbbbb]">Errors</span>
+                    <span className="text-red-400 text-xl font-bold">{stats.error}</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="text-center">
-              <p className="text-sm text-gray-400">Error</p>
-              <p className="text-xl font-bold text-red-500">{stats.error}</p>
-            </div>
+          </div>
+
+          <div className="text-center text-[#bbbbbb] text-sm">
+            Click inside the box and start typing
           </div>
         </div>
 
-        <div className="relative bg-gray-800 rounded-lg p-8 shadow-lg">
-          <div className="font-mono text-lg whitespace-pre-wrap">
-            {getStyledText()}
+        {/* Right side - Typing Area */}
+        <div className="w-2/3 p-8 flex items-center justify-center">
+          <div className="w-full max-w-4xl">
+            <div className="relative bg-[#1a1a1a] rounded-2xl p-8 shadow-xl border border-yellow-400/20">
+              <div className="font-mono text-xl leading-relaxed">
+                {getStyledText()}
+              </div>
+              <textarea
+                value={stats.value}
+                onChange={handleInputChange}
+                onKeyDown={handleInputChange}
+                className="absolute top-0 left-0 w-full h-full p-8 bg-transparent text-transparent caret-yellow-400 resize-none focus:outline-none font-mono text-xl z-10 whitespace-pre"
+                autoFocus
+                spellCheck="false"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+              />
+            </div>
           </div>
-          <textarea
-            value={stats.value}
-            onChange={handleInputChange}
-            onKeyDown={handleInputChange}
-            className="absolute top-0 left-0 w-full h-full p-8 bg-transparent text-transparent caret-yellow-500 resize-none focus:outline-none font-mono text-lg z-10 whitespace-pre"
-            autoFocus
-            spellCheck="false"
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-          />
-        </div>
-
-        <div className="mt-6 text-center text-gray-500 text-sm">
-          Click inside the box and start typing
         </div>
       </div>
     </div>
