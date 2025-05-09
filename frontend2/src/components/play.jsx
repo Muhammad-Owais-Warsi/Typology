@@ -1,24 +1,26 @@
+import { useNavigate } from "react-router-dom";
 import usePlay from "../hooks/stats";
 import { pusher } from "../utils/pusher";
 import { useStore } from "../utils/zustand";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 export default function Play({roomId}) {
 
 
   const { stats, handleInputChange, PARA } = usePlay();
   const channel = pusher.subscribe(roomId);
+  
+  const navigate = useNavigate();
 
   channel.bind("timer-expired", () => {
-    window.location.reload()
+    // window.location.reload()
+    
+    navigate(`/result?correct=${stats.correct}&error=${stats.error}`)
   })
 
   const getStyledText = () => {
     return PARA.split("").map((char, index) => {
 
       const currentIndex = stats.value.length;
-
 
       if (index >= currentIndex) {
         return <span key={index} className="text-gray-500 whitespace-pre">{char}</span>;
@@ -37,8 +39,6 @@ export default function Play({roomId}) {
 
   const { timer } = useStore();
 
-
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-gray-100 p-6">
       <div className="w-full max-w-3xl">
@@ -46,6 +46,10 @@ export default function Play({roomId}) {
           <h1 className="text-2xl font-bold text-yellow-500">{timer}</h1>
           <h1 className="text-2xl font-bold text-yellow-500">ChimpType</h1>
           <div className="flex gap-6">
+            <div className="text-center">
+              <p className="text-sm text-gray-400">WPM</p>
+              <p className="text-xl font-bold text-yellow-500">{stats.wpm}</p>
+            </div>
             <div className="text-center">
               <p className="text-sm text-gray-400">Correct</p>
               <p className="text-xl font-bold text-yellow-500">{stats.correct}</p>
@@ -64,6 +68,7 @@ export default function Play({roomId}) {
           <textarea
             value={stats.value}
             onChange={handleInputChange}
+            onKeyDown={handleInputChange}
             className="absolute top-0 left-0 w-full h-full p-8 bg-transparent text-transparent caret-yellow-500 resize-none focus:outline-none font-mono text-lg z-10 whitespace-pre"
             autoFocus
             spellCheck="false"
