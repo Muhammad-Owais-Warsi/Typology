@@ -4,8 +4,12 @@ import { api } from "../utils/axios";
 import Play from "./play";
 import { useCodeStore, useStore } from "../utils/zustand";
 import { getUniqueId } from "../utils/uniqueId";
+import { useKindeAuth } from '@kinde-oss/kinde-auth-react';
+
+
 
 export default function FindMatch() {
+  const { logout } = useKindeAuth();
   const [playerId, setPlayerId] = useState(null);
   const [roomId, setRoomId] = useState(null);
   const [opponentId, setOpponentId] = useState(null);
@@ -112,9 +116,18 @@ export default function FindMatch() {
 
   return (
     <div className="fixed inset-0 bg-[#0f0f0f] text-[#f5f5f5] font-mono flex flex-col items-center justify-center p-6">
+      <div className="absolute top-4 right-4 text-xl font-bold text-yellow-300 text-center space-y-4">
+        <button
+          onClick={() => logout()}
+          type="button"
+          className="border-2 border-yellow-300 rounded-lg px-4 py-2 text-yellow-300 hover:bg-yellow-500 hover:text-black transition"
+        >
+          Sign out
+        </button>
+      </div>
       <div className={`max-w-2xl w-full space-y-8 transition-all duration-700 transform
         ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-        
+
         <div className="text-center space-y-4">
           <h1 className="text-4xl md:text-5xl font-bold text-yellow-300">
             Find Your Match
