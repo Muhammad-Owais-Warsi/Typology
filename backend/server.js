@@ -1,13 +1,16 @@
 const express = require("express");
 const Pusher = require("pusher");
 const cors = require("cors");
-const dotenv = require("dotenv");
-dotenv.config();
+const cookieParser = require("cookie-parser");
+const { getAppwriteClient } = require("./utils/appwrite.js");
+require("dotenv").config();
 
 const app = express();
-app.use(cors({
-  origin: "https://chimptype.onrender.com"
-}));
+app.use(cookieParser())
+// app.use(cors({
+//   origin: "https://chimptype.onrender.com"
+// }));
+app.use(cors({ origin: "http://localhost:5173", credentials: true, }));
 app.use(express.json());
 
 const pusher = new Pusher({
@@ -130,6 +133,7 @@ const startTimer = (roomId, duration = 10) => {
   }, 1000);
 };
 
+
 app.post("/find-match", (req, res) => {
   const { playerId } = req.body;
 
@@ -171,6 +175,18 @@ app.post("/find-match", (req, res) => {
     res.json({ matched: false });
   }
 });
+
+app.get("/api/me", async (req, res) => {
+  const { account } = getAppwriteClient(req.cookies);
+
+  try {
+    const user = await account.get();
+    res.json(user);
+  }
+  catch(err) {
+    res.status(401).json({ error: "Unauthorized" });
+  }
+})
 
 app.post("/update-score", (req, res) => {
   const { roomId, playerId, score } = req.body;
