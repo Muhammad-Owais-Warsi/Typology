@@ -8,6 +8,7 @@ export default function Result() {
   const error = queryParams.get("error");
 
   
+  
   return (
     <>
       {

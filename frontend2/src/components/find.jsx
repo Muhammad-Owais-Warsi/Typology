@@ -5,22 +5,22 @@ import Play from "./play";
 import { useCodeStore, useStore } from "../utils/zustand";
 import { getUniqueId } from "../utils/uniqueId";
 
-
 export default function FindMatch() {
   const [playerId, setPlayerId] = useState(null);
   const [roomId, setRoomId] = useState(null);
   const [opponentId, setOpponentId] = useState(null);
   const [showCountdown, setShowCountdown] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
-
-  
-
   const [countdown, setCountdown] = useState(5);
+  const [showContent, setShowContent] = useState(false);
 
   const { setTimer } = useStore();
   const { setCode } = useCodeStore();
-
   const channelRef = useRef(null);
+
+  useEffect(() => {
+    setShowContent(true);
+  }, []);
 
   async function findMatch() {
     const newPlayerId = 'player-' + getUniqueId();
@@ -65,12 +65,10 @@ export default function FindMatch() {
     });
   }
 
-
   function subscribeToRoom(room, player, opponent) {
     console.log(room)
     const channel = pusher.subscribe(room);
     channelRef.current = channel;
-
 
     channel.bind("match-start", (data) => {
       console.log("Match started in room", data.room);
@@ -79,84 +77,99 @@ export default function FindMatch() {
       console.log(data);
     });
 
-
-
     channel.bind("timer-update", (data) => {
       setTimer(data.timeLeft)
     })
 
-
     channel.bind("code-block", (data) => {
       console.log(data.randomBlock.code)
       setCode(data?.randomBlock.code)
-
     })
 
-
     console.log("Subscribing to room:", room);
-
   }
 
   useEffect(() => {
     if (playerId && opponentId && roomId) {
       setShowCountdown(true);
-
-
       const interval = setInterval(() => {
         setCountdown((prev) => {
           if (prev === 1) {
             clearInterval(interval);
             setShowCountdown(false);
-            setGameStarted(true); 
+            setGameStarted(true);
           }
           return prev - 1;
         });
       }, 1000);
-
       return () => clearInterval(interval);
     }
   }, [playerId, opponentId, roomId]);
-
 
   if (gameStarted) {
     return <Play playerId={playerId} opponentId={opponentId} roomId={roomId} />;
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#0f0f0f] text-[#f5f5f5] font-mono gap-6 px-4">
-      <h1 className="text-3xl">Welcome to <span className="bg-yellow-300 text-black  whitespace-nowrap pr-1">ChimpType</span>.</h1>
+    <div className="fixed inset-0 bg-[#0f0f0f] text-[#f5f5f5] font-mono flex flex-col items-center justify-center p-6">
+      <div className={`max-w-2xl w-full space-y-8 transition-all duration-700 transform
+        ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+        
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-yellow-300">
+            Find Your Match
+          </h1>
 
-      <button
-        disabled={playerId}
-        onClick={findMatch}
-        className="bg-yellow-400 hover:bg-yellow-500 disabled:opacity-50 text-black font-bold px-6 py-3 rounded-lg shadow-md transition-all duration-200"
-      >
-        Find Match
-      </button>
-
-      {playerId && !opponentId && (
-        <div className="text-yellow-300 text-xl animate-pulse">
-          <h1>WAITING...</h1>
-          <p className="text-sm mt-2">Your ID: {playerId}</p>
         </div>
-      )}
 
-      {showCountdown && (
-        <div className="text-green-400 text-2xl font-bold animate-pulse text-center">
-          Your game will start in {countdown} seconds...
+        <div className="flex justify-center">
+          <button
+            disabled={playerId}
+            onClick={findMatch}
+            className="bg-yellow-400 hover:bg-yellow-500 disabled:opacity-50 text-black font-bold px-12 py-4 rounded-lg shadow-md transition-all duration-200 transform hover:scale-105 active:scale-95 text-xl"
+          >
+            {playerId ? 'Finding Match...' : 'Find Match'}
+          </button>
         </div>
-      )}
 
+        {playerId && !opponentId && (
+          <div className="text-center space-y-4">
+            <div className="text-yellow-300 text-2xl font-bold animate-pulse">
+              Searching for opponent...
+            </div>
+            <div className="flex justify-center items-center gap-2 text-[#bbbbbb]">
+              <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+              <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+            </div>
+            <p className="text-sm text-[#bbbbbb]">Your ID: {playerId}</p>
+          </div>
+        )}
 
+        {showCountdown && (
+          <div className="text-center space-y-2">
+            <div className="text-green-400 text-4xl font-bold animate-pulse">
+              {countdown}
+            </div>
+            <div className="text-[#bbbbbb]">Match starting...</div>
+          </div>
+        )}
 
-
-      {roomId && (
-        <div className="bg-[#1a1a1a] border border-yellow-500 rounded-lg p-4 mt-4 shadow-lg w-full max-w-sm text-sm space-y-2">
-          <p><span className="text-yellow-400">Room ID:</span> {roomId}</p>
-          <p><span className="text-yellow-400">Your ID:</span> {playerId}</p>
-          <p><span className="text-yellow-400">Opponent ID:</span> {opponentId}</p>
-        </div>
-      )}
+        {roomId && (
+          <div className="text-center space-y-3 text-[#bbbbbb] border-t border-yellow-400/20 pt-4">
+            <div className="text-yellow-300 text-lg">Match Found!</div>
+            <div className="flex justify-center gap-4 text-sm">
+              <span className="text-yellow-400">Room:</span> {roomId}
+            </div>
+            <div className="flex justify-center gap-4 text-sm">
+              <span className="text-yellow-400">You:</span> {playerId}
+            </div>
+            <div className="flex justify-center gap-4 text-sm">
+              <span className="text-yellow-400">Opponent:</span> {opponentId}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
