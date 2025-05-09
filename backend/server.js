@@ -5,9 +5,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const app = express();
-app.use(cors({
-  origin: "https://chimptype.onrender.com"
-}));
+app.use(cors());
 app.use(express.json());
 
 const pusher = new Pusher({
@@ -131,6 +129,7 @@ const startTimer = (roomId, duration = 10) => {
 };
 
 app.post("/find-match", (req, res) => {
+
   const { playerId } = req.body;
 
   if (!playerId) {
