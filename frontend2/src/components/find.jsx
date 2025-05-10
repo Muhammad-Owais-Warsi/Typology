@@ -29,7 +29,7 @@ export default function FindMatch() {
   }, []);
 
   async function findMatch() {
-    const newPlayerId = "player-" + getUniqueId();
+    const newPlayerId = "chimp-" + user.id
     setPlayerId(newPlayerId);
 
     try {
@@ -54,7 +54,7 @@ export default function FindMatch() {
   }
 
   function waitForMatch(tempPlayerId) {
-    const tempRoom = `player-${tempPlayerId}`;
+    const tempRoom = `temp-${tempPlayerId}`;
     const tempChannel = pusher.subscribe(tempRoom);
 
     tempChannel.bind("match-start", (data) => {
@@ -123,7 +123,7 @@ export default function FindMatch() {
           <img src="/chimp-logo.webp" alt="Chimp Logo" className="w-60 h-60" />
           <div className="text-center space-y-4">
             <p className="text-[#bbbbbb] text-lg">
-              Authentication? Never heard of her.
+              Authentication? Never heard of her 🤔
             </p>
             <button
               onClick={() => (window.location.href = "/")}

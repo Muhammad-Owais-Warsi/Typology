@@ -148,7 +148,7 @@ app.post("/find-match", (req, res) => {
     });
 
     const randomBlock = getRandomCodeBlock();
-    pusher.trigger(`player-${waitingPlayer.id}`, "match-start", {
+    pusher.trigger(`temp-${waitingPlayer.id}`, "match-start", {
       roomId,
       players,
       randomBlock
