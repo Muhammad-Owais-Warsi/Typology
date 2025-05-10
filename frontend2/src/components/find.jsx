@@ -120,17 +120,13 @@ export default function FindMatch() {
     <div className="fixed inset-0 bg-[#0f0f0f] text-[#f5f5f5] font-mono flex flex-col items-center justify-center p-6">
       {error ? (
         <div className="flex flex-col items-center justify-center space-y-6">
-          <img 
-            src="/chimp-logo.webp" 
-            alt="Chimp Logo" 
-            className="w-60 h-60"
-          />
+          <img src="/chimp-logo.webp" alt="Chimp Logo" className="w-60 h-60" />
           <div className="text-center space-y-4">
             <p className="text-[#bbbbbb] text-lg">
               Authentication? Never heard of her.
             </p>
             <button
-              onClick={() => window.location.href = '/'}
+              onClick={() => (window.location.href = "/")}
               className="border-2 border-yellow-300 rounded-lg px-6 py-3 text-yellow-300 hover:bg-yellow-500 hover:text-black transition mt-4"
             >
               Back Home
@@ -140,9 +136,9 @@ export default function FindMatch() {
       ) : !user ? (
         <div className="flex flex-col items-center justify-center space-y-6">
           <div className="w-60 h-60 relative">
-            <img 
-              src="/chimp-logo.webp" 
-              alt="Chimp Logo" 
+            <img
+              src="/chimp-logo.webp"
+              alt="Chimp Logo"
               className="w-full h-full opacity-50"
             />
             <div className="absolute inset-0 flex items-center justify-center">
@@ -159,15 +155,8 @@ export default function FindMatch() {
         <>
           <div className="absolute top-4 left-4 flex items-center gap-3">
             <div className="flex items-center gap-3 border-2 border-yellow-300 rounded-lg px-4 py-2">
-              {user.avatar && (
-                <img 
-                  src={user.avatar} 
-                  alt="Profile" 
-                  className="w-8 h-8 rounded-full"
-                />
-              )}
               <div className="text-yellow-300 font-semibold hidden sm:block">
-                {user.name}
+                {`Chimp-${user.id}`}
               </div>
             </div>
           </div>

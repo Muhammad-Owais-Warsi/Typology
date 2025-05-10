@@ -1,4 +1,4 @@
-import { ShortUniqueId } from "short-unique-id";
+import  ShortUniqueId  from "short-unique-id";
 
 
 export function getUniqueId() {
@@ -6,8 +6,7 @@ export function getUniqueId() {
 }
 
 // for future use
-function uniqueId() {
+export function uniqueId() {
   const uid = new ShortUniqueId({ length: 10 });
-  
   return uid.rnd()
 }

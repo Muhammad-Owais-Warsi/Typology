@@ -1,11 +1,11 @@
 import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 import { useEffect, useState } from "react";
+import db from "../utils/supabase";
 
 export function useAuth() {
-  
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
-  
+
   const { getAccessToken } = useKindeAuth();
 
   useEffect(() => {
@@ -21,12 +21,28 @@ export function useAuth() {
           },
         );
         const data = await res.json();
+        const findUser = await db.getUser(data.email);
 
-        setUser({
-          name: data.name,
-          email: data.email,
-          avatar: data.picture
-        })
+        // console.log(findUser.success[0].id);
+
+        if (findUser.success.length === 0) {
+          const newUser = await db.createUser(data.email);
+
+          if (newUser.success) {
+            console.log(newUser.success);
+            setUser({
+              id: newUser.success,
+            });
+          }
+        } else {
+          console.log(findUser);
+
+          if (findUser.success) {
+            setUser({
+              id: findUser.success[0].id,
+            });
+          }
+        }
       } catch (err) {
         setError(err.message);
         console.log(err);
@@ -35,10 +51,9 @@ export function useAuth() {
 
     fetchData();
   }, [getAccessToken]);
-  
-  
+
   return {
     user,
-    error
-  }
+    error,
+  };
 }

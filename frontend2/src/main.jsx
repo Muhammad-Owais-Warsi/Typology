@@ -5,7 +5,7 @@ import App from "./App.jsx";
 import "./App.css";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
+  // <StrictMode>
     <KindeProvider
       clientId="b439cba08eab4b878ddd63c3426aefa5"
       domain="https://chimptype.kinde.com"
@@ -14,5 +14,5 @@ createRoot(document.getElementById("root")).render(
     >
       <App />
     </KindeProvider>
-  </StrictMode>,
+  // </StrictMode>,
 );
