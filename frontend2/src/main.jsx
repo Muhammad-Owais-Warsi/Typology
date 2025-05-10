@@ -16,3 +16,8 @@ createRoot(document.getElementById("root")).render(
     </KindeProvider>
   // </StrictMode>,
 );
+
+
+// api keys
+// VITE_SUPABASE_URL = "https://ineqoiiiifjfukkgxkqt.supabase.co"
+// VITE_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImluZXFvaWlpaWZqZnVra2d4a3F0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY4NzkyNjUsImV4cCI6MjA2MjQ1NTI2NX0.RQGERBZtBWpI26szdcFapNgNtGitETpNlalQrDMLQ5A"
