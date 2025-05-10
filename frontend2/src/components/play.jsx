@@ -21,7 +21,7 @@ export default function Play({roomId}) {
         return (
           <span 
             key={index} 
-            className="text-[#666666] whitespace-pre transition-colors duration-150"
+            className="text-[#666666] whitespace-pre-wrap transition-colors duration-150"
           >
             {char}
           </span>
@@ -32,7 +32,7 @@ export default function Play({roomId}) {
       const isCorrect = typedChar === char;
 
       return (
-        <span key={index} className={`${isCorrect ? "text-yellow-400" : "text-red-400"} whitespace-pre`}>
+        <span key={index} className={`${isCorrect ? "text-yellow-400" : "text-red-400"} whitespace-pre-wrap`}>
           {char}
         </span>
       );
@@ -85,14 +85,14 @@ export default function Play({roomId}) {
         <div className="w-2/3 p-8 flex items-center justify-center">
           <div className="w-full max-w-4xl">
             <div className="relative bg-[#1a1a1a] rounded-2xl p-8 shadow-xl border border-yellow-400/20">
-              <div className="font-mono text-xl leading-relaxed">
+              <div className="font-mono text-xl leading-[1.8] whitespace-pre-wrap">
                 {getStyledText()}
               </div>
               <textarea
                 value={stats.value}
                 onChange={handleInputChange}
                 onKeyDown={handleInputChange}
-                className="absolute top-0 left-0 w-full h-full p-8 bg-transparent text-transparent caret-yellow-400 resize-none focus:outline-none font-mono text-xl z-10 whitespace-pre"
+                className="absolute top-0 left-0 w-full h-full p-8 bg-transparent text-transparent caret-yellow-400 resize-none focus:outline-none font-mono text-xl z-10 whitespace-pre-wrap leading-[1.8]"
                 autoFocus
                 spellCheck="false"
                 autoComplete="off"

@@ -5,7 +5,7 @@ let PARA = "";
 
 export default function usePlay() {
   const { code } = useCodeStore();
-  PARA = code
+  PARA = code;
   
   const [stats, setStats] = useState({
     correct: 0,
@@ -18,7 +18,16 @@ export default function usePlay() {
   const prevIndex = useRef(0);
   const startTime = useRef(null);
   const lastTypedLength = useRef(0);
+  const completedLines = useRef([]);
   
+  const getCurrentLine = (text) => {
+    const lines = text.split('\n');
+    return lines[lines.length - 1];
+  };
+
+  const getCompletedText = () => {
+    return completedLines.current.join('\n');
+  };
   
   useEffect(() => {
     if (!startTime.current) return;
@@ -27,7 +36,8 @@ export default function usePlay() {
       const elapsedSeconds = (Date.now() - startTime.current) / 1000;
       if (elapsedSeconds < 1) return;
         
-      lastTypedLength.current = stats.value.length
+      const completedText = getCompletedText(stats.value);
+      lastTypedLength.current = completedText.length;
       const wpm = (lastTypedLength.current * 60) / (5 * elapsedSeconds);
       setStats(prev => ({ ...prev, wpm: Math.round(wpm) }));
     }, 1000);
@@ -43,12 +53,12 @@ export default function usePlay() {
       if (!startTime.current) {
         startTime.current = Date.now();
         lastTypedLength.current = 0;
+        completedLines.current = [];
       }
-  
+
       let newIndexArray = [...prev.index];
       let newCorrect = prev.correct;
       let newError = prev.error;
-
       
       // Handle backspace
       if (typedIndex < prevIndex.current) {
@@ -62,7 +72,7 @@ export default function usePlay() {
       
       const lastChar = typedValue[typedIndex - 1];
       const expectedChar = PARA[typedIndex - 1];
-      const isTyped = newIndexArray[typedIndex - 1]?.typed || false
+      const isTyped = newIndexArray[typedIndex - 1]?.typed || false;
       
       // Handle tab key
       if (e.key === 'Tab') {
@@ -75,10 +85,22 @@ export default function usePlay() {
           index: newIndexArray
         };
       }
-    
+
+      // Handle enter key
+      if (e.key === 'Enter') {
+        const currentLine = getCurrentLine(typedValue.slice(0, -1));
+        const targetLine = getCurrentLine(PARA.slice(0, typedIndex - 1));
+        
+        if (currentLine.length === targetLine.length) {
+          completedLines.current.push(currentLine);
+        }
+      }
+      
       if (lastChar === expectedChar) {
-        !isTyped ? newCorrect++ : newCorrect;
-        newIndexArray[typedIndex - 1] = { typed: true };
+        if (!isTyped) {
+          newCorrect++;
+          newIndexArray[typedIndex - 1] = { typed: true };
+        }
       } else {
         newError++;
         newIndexArray[typedIndex - 1] = { typed: false };
